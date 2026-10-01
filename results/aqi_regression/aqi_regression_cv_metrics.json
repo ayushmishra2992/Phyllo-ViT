@@ -1,0 +1,30 @@
+{
+    "selected_alpha": 0.01,
+    "cross_validation": {
+        "mae_mean": 8.691392517089843,
+        "mae_std": 2.1866418936283716,
+        "rmse_mean": 10.597379398345947,
+        "rmse_std": 2.361255839943816,
+        "r2_mean": -0.2815002679824829,
+        "r2_std": 0.5634501969424878
+    },
+    "test_ridge": {
+        "MAE": 4.362890720367432,
+        "RMSE": 4.830056406011622,
+        "R2": 0.821858286857605
+    },
+    "test_mean_baseline": {
+        "MAE": 8.887804985046387,
+        "RMSE": 11.449467302615956,
+        "R2": -0.0009949207305908203
+    },
+    "dataset": {
+        "total_samples": 46,
+        "training_samples": 36,
+        "validation_samples": 5,
+        "test_samples": 5,
+        "final_training_samples": 41,
+        "embedding_dimensions": 768
+    },
+    "model_file": "results/aqi_regression\\aqi_ridge_model.joblib"
+}

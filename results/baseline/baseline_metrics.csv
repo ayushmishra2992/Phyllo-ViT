@@ -1,0 +1,2 @@
+Model,Accuracy,Precision,Recall,F1
+HOG + SVM,0.95,0.95,0.95,0.95
