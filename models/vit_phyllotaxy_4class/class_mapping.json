@@ -1,0 +1,20 @@
+{
+  "classes": [
+    "Alternate",
+    "Opposite",
+    "Whorled",
+    "Not_a_leaf"
+  ],
+  "label2id": {
+    "Alternate": 0,
+    "Opposite": 1,
+    "Whorled": 2,
+    "Not_a_leaf": 3
+  },
+  "id2label": {
+    "0": "Alternate",
+    "1": "Opposite",
+    "2": "Whorled",
+    "3": "Not_a_leaf"
+  }
+}

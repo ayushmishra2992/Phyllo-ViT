@@ -1,0 +1,10 @@
+              precision    recall  f1-score   support
+
+   Alternate     1.0000    0.9286    0.9630        14
+    Opposite     1.0000    1.0000    1.0000        13
+     Whorled     0.9375    1.0000    0.9677        15
+  Not_a_leaf     1.0000    1.0000    1.0000        23
+
+    accuracy                         0.9846        65
+   macro avg     0.9844    0.9821    0.9827        65
+weighted avg     0.9856    0.9846    0.9846        65

@@ -1,99 +1,141 @@
-import io
-import os
-import joblib
-import numpy as np
+from pathlib import Path
+
 import torch
+import joblib
 
 from PIL import Image
-
-from fastapi import (
-    FastAPI,
-    File,
-    UploadFile,
-    HTTPException
-)
-
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from transformers import (
     ViTImageProcessor,
-    ViTForImageClassification
+    ViTForImageClassification,
 )
 
 
-# ============================================================
-# CONFIGURATION
-# ============================================================
+# =========================================================
+# Paths
+# =========================================================
 
-VIT_MODEL_PATH = "models/vit_phyllotaxy"
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+FOUR_CLASS_MODEL_DIR = (
+    BASE_DIR
+    / "models"
+    / "vit_phyllotaxy_4class"
+)
+
+THREE_CLASS_MODEL_DIR = (
+    BASE_DIR
+    / "models"
+    / "vit_phyllotaxy"
+)
 
 AQI_MODEL_PATH = (
-    "results/aqi_regression/"
-    "aqi_ridge_model.joblib"
+    BASE_DIR
+    / "results"
+    / "aqi_regression"
+    / "aqi_ridge_model.joblib"
 )
+
+
+# =========================================================
+# Device
+# =========================================================
 
 DEVICE = torch.device(
-    "cuda" if torch.cuda.is_available() else "cpu"
+    "cuda"
+    if torch.cuda.is_available()
+    else "cpu"
 )
 
 
-# ============================================================
-# FASTAPI APPLICATION
-# ============================================================
+# =========================================================
+# FastAPI
+# =========================================================
 
 app = FastAPI(
     title="Phyllo-ViT API",
     description=(
         "Leaf phyllotaxy classification and "
-        "preliminary AQI prediction API"
+        "preliminary pollution estimation API."
     ),
-    version="1.0.0"
+    version="2.0.0",
 )
 
 
-# ============================================================
-# LOAD ViT MODEL
-# ============================================================
+# =========================================================
+# Load 4-class classifier
+# =========================================================
 
-print("=" * 70)
-print("LOADING PHYLLO-ViT MODEL")
-print("=" * 70)
+print("Loading 4-class ViT...")
 
-print("Device:", DEVICE)
-
-processor = ViTImageProcessor.from_pretrained(
-    VIT_MODEL_PATH
+four_class_processor = (
+    ViTImageProcessor.from_pretrained(
+        str(FOUR_CLASS_MODEL_DIR)
+    )
 )
 
-model = ViTForImageClassification.from_pretrained(
-    VIT_MODEL_PATH
+four_class_model = (
+    ViTForImageClassification.from_pretrained(
+        str(FOUR_CLASS_MODEL_DIR)
+    )
 )
 
-model.to(DEVICE)
-model.eval()
-
-print("ViT model loaded successfully.")
-
-print("Class mapping:")
-print(model.config.id2label)
+four_class_model.to(DEVICE)
+four_class_model.eval()
 
 
-# ============================================================
-# LOAD AQI RIDGE MODEL
-# ============================================================
+# =========================================================
+# Load original 3-class ViT
+#
+# This model is kept specifically for the AQI
+# Ridge model because the Ridge model was trained
+# using embeddings from this original ViT.
+# =========================================================
 
-print("\n" + "=" * 70)
-print("LOADING AQI REGRESSION MODEL")
-print("=" * 70)
+print("Loading original 3-class ViT for AQI...")
+
+aqi_processor = (
+    ViTImageProcessor.from_pretrained(
+        str(THREE_CLASS_MODEL_DIR)
+    )
+)
+
+aqi_embedding_model = (
+    ViTForImageClassification.from_pretrained(
+        str(THREE_CLASS_MODEL_DIR)
+    )
+)
+
+aqi_embedding_model.to(DEVICE)
+aqi_embedding_model.eval()
+
+
+# =========================================================
+# Load AQI regression model
+# =========================================================
+
+print("Loading AQI Ridge model...")
 
 aqi_model = joblib.load(
     AQI_MODEL_PATH
 )
 
-print("AQI Ridge model loaded successfully.")
+
+# =========================================================
+# Class mapping
+# =========================================================
+
+CLASS_NAMES = [
+    "Alternate",
+    "Opposite",
+    "Whorled",
+    "Not_a_leaf",
+]
 
 
-# ============================================================
-# ROOT
-# ============================================================
+# =========================================================
+# Root
+# =========================================================
 
 @app.get("/")
 def root():
@@ -101,222 +143,273 @@ def root():
     return {
         "project": "Phyllo-ViT",
         "status": "running",
+        "message": (
+            "Phyllo-ViT 4-class API is working"
+        ),
+        "classes": CLASS_NAMES,
         "device": str(DEVICE),
-        "models": {
-            "vit_classifier": True,
-            "aqi_regressor": True
-        },
-        "classes": [
-            "Alternate",
-            "Opposite",
-            "Whorled"
-        ]
     }
 
 
-# ============================================================
-# HEALTH CHECK
-# ============================================================
+# =========================================================
+# Health
+# =========================================================
 
 @app.get("/health")
 def health():
 
     return {
         "status": "healthy",
-        "vit_model_loaded": True,
-        "aqi_model_loaded": True,
-        "device": str(DEVICE)
+        "device": str(DEVICE),
+        "classifier": "4-class ViT",
+        "classes": CLASS_NAMES,
+        "aqi_model": "Ridge",
+        "aqi_supported_class": "Whorled",
     }
 
 
-# ============================================================
-# PREDICTION
-# ============================================================
+# =========================================================
+# Extract AQI-compatible embedding
+# =========================================================
+
+def extract_aqi_embedding(image):
+
+    """
+    Extract the 768-dimensional CLS embedding from
+    the original 3-class ViT.
+
+    This is intentionally separate from the new
+    4-class classifier because the AQI Ridge model
+    was trained on embeddings from the original
+    3-class ViT.
+    """
+
+    inputs = aqi_processor(
+        images=image,
+        return_tensors="pt",
+    )
+
+    pixel_values = (
+        inputs["pixel_values"]
+        .to(DEVICE)
+    )
+
+    with torch.no_grad():
+
+        outputs = (
+            aqi_embedding_model.vit(
+                pixel_values=pixel_values
+            )
+        )
+
+        embedding = (
+            outputs.last_hidden_state[:, 0, :]
+        )
+
+    return embedding.cpu().numpy()
+
+
+# =========================================================
+# Prediction
+# =========================================================
 
 @app.post("/predict")
 async def predict(
     file: UploadFile = File(...)
 ):
 
-    # --------------------------------------------------------
-    # Validate file
-    # --------------------------------------------------------
+    # -----------------------------------------------------
+    # Validate filename
+    # -----------------------------------------------------
 
-    if file.content_type is not None:
-
-        if not file.content_type.startswith("image/"):
-
-            raise HTTPException(
-                status_code=400,
-                detail="Uploaded file must be an image."
-            )
-
-    try:
-
-        # ====================================================
-        # READ IMAGE
-        # ====================================================
-
-        contents = await file.read()
-
-        image = Image.open(
-            io.BytesIO(contents)
-        ).convert("RGB")
-
-
-        # ====================================================
-        # PREPROCESS IMAGE
-        # ====================================================
-
-        inputs = processor(
-            images=image,
-            return_tensors="pt"
+    if not file.filename:
+        raise HTTPException(
+            status_code=400,
+            detail="No filename provided.",
         )
 
-        inputs = {
-            key: value.to(DEVICE)
-            for key, value in inputs.items()
-        }
+    # -----------------------------------------------------
+    # Validate image type
+    # -----------------------------------------------------
 
+    allowed_types = {
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "image/webp",
+    }
 
-        # ====================================================
-        # ViT INFERENCE
-        # ====================================================
-
-        with torch.no_grad():
-
-            outputs = model(**inputs)
-
-            logits = outputs.logits
-
-            probabilities = torch.softmax(
-                logits,
-                dim=-1
-            )
-
-
-        # ====================================================
-        # CLASSIFICATION
-        # ====================================================
-
-        predicted_id = int(
-            torch.argmax(
-                probabilities,
-                dim=-1
-            ).item()
-        )
-
-        confidence = float(
-            probabilities[
-                0,
-                predicted_id
-            ].item()
-        )
-
-        predicted_class = (
-            model.config.id2label[
-                predicted_id
-            ]
-        )
-
-
-        # ====================================================
-        # EXTRACT ViT CLS EMBEDDING
-        # ====================================================
-
-        with torch.no_grad():
-
-            vit_outputs = model.vit(
-                **inputs
-            )
-
-            cls_embedding = (
-                vit_outputs
-                .last_hidden_state[:, 0, :]
-            )
-
-        embedding = (
-            cls_embedding
-            .detach()
-            .cpu()
-            .numpy()
-        )
-
-
-        # ====================================================
-        # AQI PREDICTION
-        # ====================================================
-
-        predicted_aqi = None
-
-        aqi_message = (
-            "AQI prediction is currently "
-            "available only for the Whorled class "
-            "because the verified image-AQI training "
-            "dataset contains Whorled leaf samples."
-        )
-
-
-        if predicted_class == "Whorled":
-
-            predicted_aqi = float(
-                aqi_model.predict(
-                    embedding
-                )[0]
-            )
-
-            # Keep AQI within a sensible display range.
-            predicted_aqi = round(
-                predicted_aqi,
-                2
-            )
-
-            aqi_message = (
-                "Preliminary AQI estimate based on "
-                "the ViT embedding."
-            )
-
-
-        # ====================================================
-        # RESPONSE
-        # ====================================================
-
-        return {
-
-            "filename": file.filename,
-
-            "phyllotaxy": {
-                "class": predicted_class,
-                "confidence": round(
-                    confidence,
-                    4
-                )
-            },
-
-            "aqi": {
-                "value": predicted_aqi,
-                "message": aqi_message
-            },
-
-            "model": {
-                "device": str(DEVICE),
-                "embedding_dimensions": int(
-                    embedding.shape[1]
-                )
-            }
-        }
-
-
-    except HTTPException:
-        raise
-
-
-    except Exception as error:
+    if file.content_type not in allowed_types:
 
         raise HTTPException(
             status_code=400,
             detail=(
-                "Unable to process image: "
-                f"{str(error)}"
-            )
+                "Unsupported file type. "
+                "Please upload a JPG, JPEG, PNG, "
+                "or WEBP image."
+            ),
         )
+
+    # -----------------------------------------------------
+    # Read image
+    # -----------------------------------------------------
+
+    try:
+
+        contents = await file.read()
+
+        from io import BytesIO
+
+        image = Image.open(
+            BytesIO(contents)
+        ).convert("RGB")
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Unable to read image: {e}"
+            ),
+        )
+
+    # -----------------------------------------------------
+    # 4-class classification
+    # -----------------------------------------------------
+
+    inputs = four_class_processor(
+        images=image,
+        return_tensors="pt",
+    )
+
+    pixel_values = (
+        inputs["pixel_values"]
+        .to(DEVICE)
+    )
+
+    with torch.no_grad():
+
+        outputs = four_class_model(
+            pixel_values=pixel_values
+        )
+
+        probabilities = torch.softmax(
+            outputs.logits,
+            dim=1,
+        )
+
+        predicted_id = (
+            torch.argmax(
+                probabilities,
+                dim=1,
+            )
+            .item()
+        )
+
+        confidence = (
+            probabilities[0, predicted_id]
+            .item()
+        )
+
+    predicted_class = CLASS_NAMES[
+        predicted_id
+    ]
+
+    # -----------------------------------------------------
+    # AQI handling
+    # -----------------------------------------------------
+
+    aqi_value = None
+
+    if predicted_class == "Whorled":
+
+        try:
+
+            # Use the ORIGINAL 3-class ViT
+            # because the AQI Ridge model was
+            # trained on those embeddings.
+
+            aqi_embedding = (
+                extract_aqi_embedding(
+                    image
+                )
+            )
+
+            aqi_prediction = (
+                aqi_model.predict(
+                    aqi_embedding
+                )[0]
+            )
+
+            aqi_value = float(
+                aqi_prediction
+            )
+
+            aqi_message = (
+                "Preliminary AQI estimate "
+                "based on the ViT embedding."
+            )
+
+        except Exception as e:
+
+            aqi_message = (
+                "AQI prediction failed: "
+                f"{str(e)}"
+            )
+
+    elif predicted_class in [
+        "Alternate",
+        "Opposite",
+    ]:
+
+        aqi_message = (
+            "AQI prediction is currently "
+            "unavailable for this class because "
+            "the verified image-AQI training "
+            "dataset currently contains only "
+            "Whorled leaf samples."
+        )
+
+    else:
+
+        # Not_a_leaf
+
+        aqi_message = (
+            "AQI is not applicable because "
+            "the uploaded image was classified "
+            "as Not_a_leaf."
+        )
+
+    # -----------------------------------------------------
+    # Response
+    # -----------------------------------------------------
+
+    return {
+        "filename": file.filename,
+
+        "phyllotaxy": {
+            "class": predicted_class,
+            "confidence": round(
+                confidence,
+                4,
+            ),
+        },
+
+        "aqi": {
+            "value": (
+                round(
+                    aqi_value,
+                    2,
+                )
+                if aqi_value is not None
+                else None
+            ),
+            "message": aqi_message,
+        },
+
+        "model": {
+            "device": str(DEVICE),
+            "classifier": "ViT 4-class",
+            "embedding_dimensions": 768,
+        },
+    }

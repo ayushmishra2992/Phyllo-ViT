@@ -1,0 +1,48 @@
+{
+  "model": "google/vit-base-patch16-224-in21k",
+  "classes": [
+    "Alternate",
+    "Opposite",
+    "Whorled",
+    "Not_a_leaf"
+  ],
+  "train_samples": 289,
+  "validation_samples": 61,
+  "test_samples": 65,
+  "epochs": 8,
+  "batch_size": 4,
+  "learning_rate": 2e-05,
+  "weight_decay": 0.01,
+  "device": "cuda",
+  "best_validation_accuracy": 1.0,
+  "test_accuracy": 0.9846153846153847,
+  "test_precision": 0.9855769230769231,
+  "test_recall": 0.9846153846153847,
+  "test_f1": 0.9845786232883007,
+  "confusion_matrix": [
+    [
+      13,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      13,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      15,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      23
+    ]
+  ]
+}
