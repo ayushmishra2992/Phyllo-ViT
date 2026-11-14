@@ -1,0 +1,17 @@
+# Phyllo-ViT v3 — tested with Python 3.12 on Windows 11, RTX 3050 Laptop (4 GB).
+# torch / torchvision are installed by SETUP.bat from the PyTorch CUDA index (falls back to CPU).
+# Versions below are the ones the results were produced with.
+transformers==5.18.0
+numpy==2.5.3
+scipy==1.18.1
+scikit-learn==1.9.1
+scikit-image==0.26.0
+pandas==3.0.6
+openpyxl==3.1.5
+matplotlib==3.11.2
+pillow==12.3.0
+joblib==1.6.0
+fastapi==0.142.2
+uvicorn==0.54.0
+python-multipart==0.0.32
+httpx==0.28.1

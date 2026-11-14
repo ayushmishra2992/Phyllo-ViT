@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phyllo-ViT</title>
+<style>
+:root{--bg:#f8f6ef;--card:#fff;--ink:#1b2017;--muted:#5e7d52;--line:#d9e2cf;--soft:#e9eee2;--accent:#4a6741;
+--ok:#2f7d4f;--okbg:#e3f3e8;--warn:#9a6b00;--warnbg:#fbf1d6;--bad:#a8322d;--badbg:#f8e1df}
+@media (prefers-color-scheme:dark){:root{--bg:#10140f;--card:#181e17;--ink:#e6ebe1;--muted:#a3bb96;--line:#2c3829;--soft:#1f281d;--accent:#9cc38c;
+--ok:#7fd39f;--okbg:#17301f;--warn:#f0c66b;--warnbg:#33290f;--bad:#f19a94;--badbg:#3a1a18}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:28px 16px 8px;text-align:center}h1{margin:0;font:600 34px/1.1 Georgia,serif}
+header p{margin:8px auto 0;max-width:640px;color:var(--muted)}
+nav{display:flex;gap:8px;justify-content:center;margin:16px 0}
+nav button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 16px;border-radius:999px;cursor:pointer;font-weight:600}
+nav button.on{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+main{max-width:980px;margin:0 auto;padding:0 16px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}
+.drop{border:2px dashed var(--line);border-radius:14px;padding:28px;text-align:center;cursor:pointer}
+.drop.hover{border-color:var(--accent)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:720px){.row{grid-template-columns:1fr}}
+img.prev{max-width:100%;max-height:320px;border-radius:12px;display:block;margin:0 auto}
+.btn{background:var(--accent);color:var(--bg);border:0;padding:10px 22px;border-radius:999px;font-weight:700;cursor:pointer}
+.btn:disabled{opacity:.5}.small{font-size:12.5px;color:var(--muted)}
+.verdict{border-radius:12px;padding:14px 16px;font-weight:600}
+.ACCEPT{background:var(--okbg);color:var(--ok)}.ABSTAIN_UNCERTAIN,.ABSTAIN_UNFAMILIAR{background:var(--warnbg);color:var(--warn)}
+.NOT_A_LEAF,.REJECT_QUALITY{background:var(--badbg);color:var(--bad)}
+.big{font:600 30px Georgia,serif}.bar{height:8px;background:var(--soft);border-radius:9px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}td,th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600}.num{text-align:right;font-variant-numeric:tabular-nums}
+ul{margin:6px 0 0 18px;padding:0}h3{margin:0 0 10px;font-size:16px}code{font-size:12.5px}
+.tag{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--muted);font-weight:700}
+.figs img{max-width:100%;border-radius:10px;border:1px solid var(--line);background:#fff}
+input[type=number]{width:100%;padding:7px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.grid5{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Phyllo-ViT</h1>
+  <p>Reliability-aware phyllotaxy recognition. The system answers only when the image matches validated evidence — otherwise it says so.</p>
+  <nav><button class="on" data-tab="analyse">Analyse a leaf</button><button data-tab="evidence">Evidence</button><button data-tab="aqi">AQI calculator</button></nav>
+</header>
+<main>
+<section id="analyse">
+  <div class="card">
+    <div class="drop" id="drop"><input type="file" id="file" accept="image/*" hidden>
+      <div id="dropText"><b>Drop a photo here</b> or click to choose.<br><span class="small">Best: a shoot showing several leaves attached to the stem, plain background, in focus.</span></div>
+      <img id="prev" class="prev" hidden alt="preview">
+    </div>
+    <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:14px;flex-wrap:wrap">
+      <label class="small"><input type="checkbox" id="expl"> show withheld exploratory AQI (research only)</label>
+      <button class="btn" id="go" disabled>Analyse</button>
+    </div>
+    <p id="status" class="small"></p>
+  </div>
+  <div id="out"></div>
+</section>
+<section id="evidence" hidden><div id="ev" class="card">Loading evidence…</div></section>
+<section id="aqi" hidden>
+  <div class="card"><h3>India National AQI (CPCB 2014) from measured concentrations</h3>
+  <p class="small">A deterministic formula, kept separate from any model. Units µg/m³ (CO in mg/m³); 24-h averages (O₃, CO: 8-h).</p>
+  <div class="grid5" id="aqiIn"></div><p><button class="btn" id="aqiGo" style="margin-top:12px">Compute AQI</button></p><div id="aqiOut"></div></div>
+</section>
+</main>
+<script>
+const $=s=>document.querySelector(s), esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pct=x=>(x*100).toFixed(1)+"%", fmt=(x,d=3)=>x==null?"–":Number(x).toFixed(d);
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
+ ["analyse","evidence","aqi"].forEach(id=>$("#"+id).hidden=id!==b.dataset.tab); if(b.dataset.tab==="evidence")loadEvidence();});
+let file=null;const drop=$("#drop");
+drop.onclick=()=>$("#file").click();$("#file").onchange=e=>pick(e.target.files[0]);
+drop.ondragover=e=>{e.preventDefault();drop.classList.add("hover")};drop.ondragleave=()=>drop.classList.remove("hover");
+drop.ondrop=e=>{e.preventDefault();drop.classList.remove("hover");pick(e.dataTransfer.files[0])};
+function pick(f){if(!f)return;file=f;const p=$("#prev");p.src=URL.createObjectURL(f);p.hidden=false;$("#dropText").hidden=true;$("#go").disabled=false;$("#out").innerHTML="";}
+$("#go").onclick=async()=>{ $("#go").disabled=true;$("#status").textContent="Running quality gate → ViT → reliability checks…";
+ const fd=new FormData();fd.append("file",file);
+ try{const r=await fetch(`/predict?explain=true&show_exploratory_aqi=${$("#expl").checked}`,{method:"POST",body:fd});
+  const j=await r.json(); if(!r.ok)throw new Error(j.detail||r.status); render(j); $("#status").textContent="";}
+ catch(e){$("#status").textContent="Error: "+e.message}
+ $("#go").disabled=false;};
+function render(r){
+ const d=r.decision,p=r.phyllotaxy,rel=r.reliability,q=r.quality,a=r.aqi;
+ const probs=Object.entries(p.probabilities).sort((x,y)=>y[1]-x[1]).map(([k,v])=>`<tr><td>${k}</td><td style="width:55%"><div class="bar"><i style="width:${v*100}%"></i></div></td><td class="num">${pct(v)}</td></tr>`).join("");
+ const label=d.accepted?p.class:(d.status==="NOT_A_LEAF"?"Not a leaf":d.status==="REJECT_QUALITY"?"—":"No reliable answer");
+ let aqiHtml=`<p><span class="tag">${a.status}</span></p><p class="small">${esc(a.message)}</p>`;
+ if(a.value!=null)aqiHtml=`<div class="big">${a.value}</div>`+aqiHtml;
+ if(a.exploratory_value!=null)aqiHtml+=`<p class="small"><b>Exploratory value (withheld):</b> ${a.exploratory_value} — ${esc(a.exploratory_warning)}</p>`;
+ aqiHtml+=`<p class="small">Evidence: ${a.evidence.pairs} verified Whorled pairs · pooled CV R² ${fmt(a.evidence.pooled_cv_r2)} · permutation p = ${fmt(a.evidence.permutation_p)}</p>`;
+ $("#out").innerHTML=`
+ <div class="card"><div class="verdict ${d.status}">${esc(d.headline)}</div><ul class="small">${d.reasons.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+ <div class="row">
+  <div class="card"><h3>Phyllotaxy</h3><div class="big">${esc(label)}</div>
+   <p class="small">Top class <b>${p.class}</b> · calibrated confidence ${pct(p.confidence)} (raw ${pct(p.raw_confidence)}) · acceptance threshold ${pct(rel.confidence_threshold)}</p>
+   <table>${probs}</table></div>
+  <div class="card"><h3>Where the model looked</h3>${r.explanation?`<img class="prev" src="data:image/png;base64,${r.explanation.heatmap_png_base64}" alt="attention heatmap"><p class="small">${esc(r.explanation.method)}. ${esc(r.explanation.note)}</p>`:""}</div>
+ </div>
+ <div class="row">
+  <div class="card"><h3>Reliability checks</h3><table>
+   <tr><th>Check</th><th class="num">Value</th><th class="num">Threshold</th><th></th></tr>
+   <tr><td>Mahalanobis (higher = more familiar)</td><td class="num">${fmt(rel.mahalanobis_score,0)}</td><td class="num">≥ ${fmt(rel.mahalanobis_threshold,0)}</td><td>${rel.mahalanobis_score>=rel.mahalanobis_threshold?"✓":"✗"}</td></tr>
+   <tr><td>Nearest-neighbour similarity</td><td class="num">${fmt(rel.knn_similarity)}</td><td class="num">≥ ${fmt(rel.knn_threshold)}</td><td>${rel.knn_similarity>=rel.knn_threshold?"✓":"✗"}</td></tr>
+   <tr><td>Calibrated confidence (T=${rel.temperature})</td><td class="num">${pct(p.confidence)}</td><td class="num">≥ ${pct(rel.confidence_threshold)}</td><td>${p.confidence>=rel.confidence_threshold?"✓":"✗"}</td></tr>
+   <tr><td>Image quality</td><td class="num">${q.passed?"pass":"fail"}</td><td class="num">sharp ${fmt(q.sharpness,0)} · noise ${fmt(q.noise,1)}</td><td>${q.passed?"✓":"✗"}</td></tr>
+  </table><p class="small">Thresholds keep 95% of validation leaves; fit on training/validation data only.</p></div>
+  <div class="card"><h3>Air-quality estimate</h3>${aqiHtml}</div>
+ </div>
+ <p class="small">${r.model.classifier} · ${r.model.device.toUpperCase()} · ${r.model.latency_ms} ms · ${esc(r.filename)}</p>`;}
+let evLoaded=false;
+async function loadEvidence(){ if(evLoaded)return; const j=await (await fetch("/evidence")).json(); evLoaded=true;
+ const c=j.classification, R=j.reliability, P=j.pollution, A=j.audit;
+ const cvRows=c.cv.map(x=>`<tr><td>${esc(x.model)}</td><td>${x.protocol}</td><td class="num">${fmt(x.accuracy_mean)} ± ${fmt(x.accuracy_std)}</td><td class="num">${fmt(x.macro_f1_mean)}</td></tr>`).join("");
+ const ft=Object.entries(c.finetuned_heldout).map(([k,v])=>`<tr><td>${k==="ft3"?"Fine-tuned ViT, 3-class":"Fine-tuned ViT, 4-class (deployed)"}</td><td class="num">${v.correct}/${v.test_n} = ${pct(v.accuracy)}</td><td class="num">${pct(v.wilson95[0])} – ${pct(v.wilson95[1])}</td><td class="num">${v.test_images_with_near_dup_in_trainval}</td></tr>`).join("");
+ const B=R.B_unseen_arrangement.summary;
+ const Brows=Object.entries(B).map(([m,v])=>`<tr><td>${m}</td><td class="num">${fmt(v.AUROC_mean)} ± ${fmt(v.AUROC_std)}</td><td class="num">${fmt(v.FPR95_mean)}</td></tr>`).join("");
+ const A1=R.A_nonleaf_without_nonleaf_training["fine-tuned 3-class ViT"];
+ const C=R.C_deployed_4class, D=R.D_policy.evaluation;
+ const piv=P.workbook_r2_pivot.map(x=>`<tr><td>${esc(x.cv)}</td><td>${esc(x.model)}</td>${["PM2.5","PM10","NO2","CO","O3"].map(t=>`<td class="num">${fmt(x[t],2)}</td>`).join("")}</tr>`).join("");
+ const ia=P.image_aqi.map(x=>`<tr><td>${esc(x.features)}</td><td>${esc(x.model)}</td><td class="num">${fmt(x.R2_mean)} ± ${fmt(x.R2_std)}</td><td class="num">${fmt(x.MAE,2)}</td></tr>`).join("");
+ $("#ev").innerHTML=`
+ <h3>1 · Dataset audit</h3><p class="small">${A.n_images} images · ${A.near_duplicate_pairs} near-duplicate pairs (pHash ≤ ${A.near_duplicate_threshold_bits} bits) · ${A.near_dup_pairs_linking_test_to_trainval_4class} link the 4-class test set to train/val. Alternate images are never landscape; most Opposite images are.</p>
+ <h3>2 · Classification (265 unique leaves, repeated 5-fold CV)</h3><table><tr><th>Model</th><th>Protocol</th><th class="num">Accuracy</th><th class="num">Macro-F1</th></tr>${cvRows}</table>
+ <p class="small"><b>Interpretation:</b> colour statistics alone reach ~95% and image orientation/size alone ~77% — the current classes are confounded with species/session, so these accuracies do not prove phyllotaxy understanding.</p>
+ <table><tr><th>Held-out test</th><th class="num">Accuracy</th><th class="num">Wilson 95% CI</th><th class="num">test imgs w/ near-dup in train</th></tr>${ft}</table>
+ <h3 style="margin-top:18px">3 · Reliability</h3>
+ <p class="small">Leaf vs COCO non-leaf, model never trained on non-leaf: AUROC ${Object.entries(A1).map(([k,v])=>`${k} ${fmt(v.AUROC)}`).join(" · ")}</p>
+ <p class="small">Unseen arrangement (leave-one-arrangement-out, frozen ViT, 3 held-out classes × 5 seeds). Because each class is largely one species/session, this mostly measures <i>novel-species</i> detection:</p>
+ <table><tr><th>Score</th><th class="num">AUROC</th><th class="num">FPR@95%TPR</th></tr>${Brows}</table>
+ <p class="small">Calibration (4-class test): ECE ${fmt(C.ECE_test_raw)} → ${fmt(C.ECE_test_calibrated)} with T=${C.temperature} (validation accuracy ${pct(C.val_accuracy)}, so T is constrained to [0.5, 5]).</p>
+ <p class="small">Abstention policy on untouched test leaves: coverage ${pct(D.test_leaves_coverage)}, accuracy on accepted ${pct(D.test_leaves_accuracy_on_accepted)} (vs ${pct(D.test_leaves_accuracy_without_policy)} without). Non-leaf test: ${JSON.stringify(D.test_nonleaf_decisions)}. Corrupted images not accepted: ${pct(D.corrupted_not_accepted_rate)}.</p>
+ <div class="figs row"><img src="/results/e04_reliability/ood_auroc.png" alt="OOD AUROC"><img src="/results/e04_reliability/risk_coverage.png" alt="risk coverage"></div>
+ <h3 style="margin-top:18px">4 · Pollution-data audit (455-row workbooks)</h3>
+ <p class="small">High- and low-traffic workbooks share <b>identical</b> pollutant targets (${Object.entries(P.workbooks.identical_targets_HT_vs_LT).map(([k,v])=>k+" "+pct(v)).join(", ")}). Mean R² over both sites:</p>
+ <table><tr><th>CV</th><th>Model</th><th class="num">PM2.5</th><th class="num">PM10</th><th class="num">NO₂</th><th class="num">CO</th><th class="num">O₃</th></tr>${piv}</table>
+ <p class="small">With random splits, a model given only the <b>row number</b> matches the leaf-feature model → the apparent skill is temporal autocorrelation. With time-respecting splits every model is worse than the mean.</p>
+ <h3 style="margin-top:18px">5 · Image → AQI (46 verified Whorled pairs, 5-fold × 10)</h3><table><tr><th>Features</th><th>Model</th><th class="num">R²</th><th class="num">MAE</th></tr>${ia}</table>
+ <p class="small">Permutation p = ${fmt(P.verdict.permutation_p_value)} → <b>${esc(P.verdict.decision)}</b></p>`;}
+const POLS=["PM2.5","PM10","NO2","O3","CO","SO2","NH3","Pb"];
+$("#aqiIn").innerHTML=POLS.map(p=>`<label class="small">${p}<input type="number" step="any" min="0" data-p="${p}"></label>`).join("");
+$("#aqiGo").onclick=async()=>{const body={};document.querySelectorAll("#aqiIn input").forEach(i=>{if(i.value!=="")body[i.dataset.p]=parseFloat(i.value)});
+ const r=await fetch("/aqi/compute",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});const j=await r.json();
+ if(!r.ok){$("#aqiOut").innerHTML=`<p class="small">${esc(j.detail)}</p>`;return}
+ $("#aqiOut").innerHTML=`<div class="big">${j.aqi??"–"} <span class="small">${j.category??""}${j.dominant_pollutant?" · dominant "+j.dominant_pollutant:""}</span></div>${j.note?`<p class="small">${esc(j.note)}</p>`:""}
+ <table><tr><th>Pollutant</th><th class="num">Conc.</th><th class="num">Sub-index</th><th>Category</th></tr>${Object.entries(j.sub_indices).map(([k,v])=>`<tr><td>${k} (${v.averaging})</td><td class="num">${v.concentration} ${v.unit}</td><td class="num">${v.sub_index}</td><td>${v.category}</td></tr>`).join("")}</table>`;};
+</script>
+</body>
+</html>

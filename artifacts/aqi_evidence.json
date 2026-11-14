@@ -1,0 +1,26 @@
+{
+  "n_pairs": 46,
+  "classes_covered": [
+    "Whorled"
+  ],
+  "target": "AQI (undocumented station, date and averaging period)",
+  "aqi_range": [
+    72.0,
+    120.0
+  ],
+  "aqi_std": 11.454520904400079,
+  "pooled_cv_R2_ft3_ridge": -0.07334432977842864,
+  "permutation_p_value": 0.44776119402985076,
+  "n_permutations": 200,
+  "best_model": {
+    "features": "ft3 ViT embedding (deployed AQI space)",
+    "model": "kNN (k=5)",
+    "R2_mean": -0.14481709927990494,
+    "R2_std": 0.3217665010007922,
+    "MAE": 9.177555555555555
+  },
+  "supported": false,
+  "decision": "AQI estimate WITHHELD by default: under repeated cross-validation no image model beats a permutation null with useful effect size, and the pairs lack timestamp/station provenance.",
+  "applicability_knn_k": 3,
+  "applicability_threshold": 0.7705631256103516
+}

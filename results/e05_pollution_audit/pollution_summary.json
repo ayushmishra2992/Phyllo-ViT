@@ -1,0 +1,221 @@
+{
+  "workbooks": {
+    "rows": 455,
+    "lt_column_named_CH_equals_ht_PM10": true,
+    "identical_targets_HT_vs_LT": {
+      "PM2.5": 1.0,
+      "PM10": 1.0,
+      "NO2": 1.0,
+      "CO": 1.0,
+      "O3": 1.0
+    },
+    "lag1_autocorrelation": {
+      "high_traffic": {
+        "Contrast": 0.7567493755637009,
+        "Entropy": 0.7571267949283098,
+        "Standard Deviation": 0.7332505463442575,
+        "Absorbance": 0.9995366342154266,
+        "PM2.5": 0.7453344385838327
+      },
+      "low_traffic": {
+        "Contrast": 0.8678415036849211,
+        "Entropy": 0.8376155089006794,
+        "Standard Deviation": 0.8542860634192518,
+        "Absorbance": 0.9991841235121173,
+        "PM2.5": 0.7453344385838327
+      }
+    }
+  },
+  "workbook_r2_pivot": [
+    {
+      "cv": "blocked 5-fold (contiguous, no shuffle)",
+      "model": "Mean baseline",
+      "CO": -3.681,
+      "NO2": -1.851,
+      "O3": -6.051,
+      "PM10": -0.412,
+      "PM2.5": -0.893
+    },
+    {
+      "cv": "blocked 5-fold (contiguous, no shuffle)",
+      "model": "RandomForest (4 leaf features)",
+      "CO": -5.289,
+      "NO2": -3.569,
+      "O3": -19.378,
+      "PM10": -0.513,
+      "PM2.5": 0.014
+    },
+    {
+      "cv": "blocked 5-fold (contiguous, no shuffle)",
+      "model": "RandomForest (ROW INDEX ONLY)",
+      "CO": -9.875,
+      "NO2": -1.802,
+      "O3": -1.218,
+      "PM10": -0.923,
+      "PM2.5": -2.807
+    },
+    {
+      "cv": "blocked 5-fold (contiguous, no shuffle)",
+      "model": "Ridge (4 leaf features)",
+      "CO": -2.944,
+      "NO2": -2.884,
+      "O3": -12.053,
+      "PM10": -0.205,
+      "PM2.5": 0.261
+    },
+    {
+      "cv": "forward-chaining (TimeSeriesSplit 5)",
+      "model": "Mean baseline",
+      "CO": -4.033,
+      "NO2": -0.323,
+      "O3": -0.625,
+      "PM10": -0.472,
+      "PM2.5": -3.087
+    },
+    {
+      "cv": "forward-chaining (TimeSeriesSplit 5)",
+      "model": "RandomForest (4 leaf features)",
+      "CO": -1.689,
+      "NO2": -2.037,
+      "O3": -0.564,
+      "PM10": -0.549,
+      "PM2.5": -0.085
+    },
+    {
+      "cv": "forward-chaining (TimeSeriesSplit 5)",
+      "model": "RandomForest (ROW INDEX ONLY)",
+      "CO": -0.744,
+      "NO2": -1.687,
+      "O3": -1.548,
+      "PM10": -0.159,
+      "PM2.5": -0.262
+    },
+    {
+      "cv": "forward-chaining (TimeSeriesSplit 5)",
+      "model": "Ridge (4 leaf features)",
+      "CO": -3.129,
+      "NO2": -2.506,
+      "O3": -0.801,
+      "PM10": -0.382,
+      "PM2.5": -0.409
+    },
+    {
+      "cv": "shuffled 5-fold (random split)",
+      "model": "Mean baseline",
+      "CO": -0.027,
+      "NO2": -0.001,
+      "O3": -0.001,
+      "PM10": -0.009,
+      "PM2.5": -0.018
+    },
+    {
+      "cv": "shuffled 5-fold (random split)",
+      "model": "RandomForest (4 leaf features)",
+      "CO": 0.28,
+      "NO2": 0.308,
+      "O3": 0.199,
+      "PM10": 0.405,
+      "PM2.5": 0.615
+    },
+    {
+      "cv": "shuffled 5-fold (random split)",
+      "model": "RandomForest (ROW INDEX ONLY)",
+      "CO": 0.655,
+      "NO2": 0.549,
+      "O3": 0.59,
+      "PM10": 0.508,
+      "PM2.5": 0.615
+    },
+    {
+      "cv": "shuffled 5-fold (random split)",
+      "model": "Ridge (4 leaf features)",
+      "CO": 0.078,
+      "NO2": 0.046,
+      "O3": 0.019,
+      "PM10": 0.223,
+      "PM2.5": 0.511
+    }
+  ],
+  "image_aqi": [
+    {
+      "features": "-",
+      "model": "Mean baseline",
+      "R2_mean": -0.13294288449595393,
+      "R2_std": 0.15453289175028984,
+      "MAE": 8.91482882882883
+    },
+    {
+      "features": "ft3 ViT embedding (deployed AQI space)",
+      "model": "Ridge (inner-CV alpha)",
+      "R2_mean": -0.1654084025002306,
+      "R2_std": 0.33470927122575633,
+      "MAE": 9.10226273091634
+    },
+    {
+      "features": "ft3 ViT embedding (deployed AQI space)",
+      "model": "kNN (k=5)",
+      "R2_mean": -0.14481709927990494,
+      "R2_std": 0.3217665010007922,
+      "MAE": 9.177555555555555
+    },
+    {
+      "features": "frozen ViT-in21k embedding",
+      "model": "Ridge (inner-CV alpha)",
+      "R2_mean": -0.17876025351356906,
+      "R2_std": 0.3206652374234631,
+      "MAE": 9.098023727416992
+    },
+    {
+      "features": "frozen ViT-in21k embedding",
+      "model": "kNN (k=5)",
+      "R2_mean": -0.2645088635125181,
+      "R2_std": 0.385994680310472,
+      "MAE": 9.3948
+    },
+    {
+      "features": "colour statistics (25-D)",
+      "model": "Ridge (inner-CV alpha)",
+      "R2_mean": -0.2896670639508216,
+      "R2_std": 0.6232077636864669,
+      "MAE": 9.087784845934358
+    },
+    {
+      "features": "colour statistics (25-D)",
+      "model": "kNN (k=5)",
+      "R2_mean": -0.4133007654855285,
+      "R2_std": 0.4718853189703642,
+      "MAE": 9.813022222222223
+    }
+  ],
+  "verdict": {
+    "n_pairs": 46,
+    "classes_covered": [
+      "Whorled"
+    ],
+    "target": "AQI (undocumented station, date and averaging period)",
+    "aqi_range": [
+      72.0,
+      120.0
+    ],
+    "aqi_std": 11.454520904400079,
+    "pooled_cv_R2_ft3_ridge": -0.07334432977842864,
+    "permutation_p_value": 0.44776119402985076,
+    "n_permutations": 200,
+    "best_model": {
+      "features": "ft3 ViT embedding (deployed AQI space)",
+      "model": "kNN (k=5)",
+      "R2_mean": -0.14481709927990494,
+      "R2_std": 0.3217665010007922,
+      "MAE": 9.177555555555555
+    },
+    "supported": false,
+    "decision": "AQI estimate WITHHELD by default: under repeated cross-validation no image model beats a permutation null with useful effect size, and the pairs lack timestamp/station provenance.",
+    "applicability_knn_k": 3,
+    "applicability_threshold": 0.7705631256103516
+  },
+  "permutation_null_quantiles": [
+    -0.08501720673585422,
+    -0.003581848578541308,
+    0.04690919314089887
+  ]
+}

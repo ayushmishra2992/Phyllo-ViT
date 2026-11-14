@@ -1,0 +1,303 @@
+{
+  "learning_curve": [
+    {
+      "model": "Colour-statistics probe (shortcut)",
+      "fraction": 0.1,
+      "n_train": 21.68,
+      "acc_mean": 0.8603461807235392,
+      "acc_sd": 0.04494755179238724
+    },
+    {
+      "model": "Colour-statistics probe (shortcut)",
+      "fraction": 0.2,
+      "n_train": 42.28,
+      "acc_mean": 0.9094323496210289,
+      "acc_sd": 0.043912488747830596
+    },
+    {
+      "model": "Colour-statistics probe (shortcut)",
+      "fraction": 0.3,
+      "n_train": 64.12,
+      "acc_mean": 0.9063710154276192,
+      "acc_sd": 0.03869939228530046
+    },
+    {
+      "model": "Colour-statistics probe (shortcut)",
+      "fraction": 0.5,
+      "n_train": 105.88,
+      "acc_mean": 0.930592915121217,
+      "acc_sd": 0.03638915338441016
+    },
+    {
+      "model": "Colour-statistics probe (shortcut)",
+      "fraction": 0.75,
+      "n_train": 161.28,
+      "acc_mean": 0.9426119443100575,
+      "acc_sd": 0.03336177515502843
+    },
+    {
+      "model": "Colour-statistics probe (shortcut)",
+      "fraction": 1.0,
+      "n_train": 212.0,
+      "acc_mean": 0.9539472128151374,
+      "acc_sd": 0.03361574036249361
+    },
+    {
+      "model": "Frozen ViT-in21k + LogReg",
+      "fraction": 0.1,
+      "n_train": 21.68,
+      "acc_mean": 0.9954716981132076,
+      "acc_sd": 0.008224337629322025
+    },
+    {
+      "model": "Frozen ViT-in21k + LogReg",
+      "fraction": 0.2,
+      "n_train": 42.28,
+      "acc_mean": 0.9954716981132076,
+      "acc_sd": 0.008224337629322022
+    },
+    {
+      "model": "Frozen ViT-in21k + LogReg",
+      "fraction": 0.3,
+      "n_train": 64.12,
+      "acc_mean": 0.9954716981132076,
+      "acc_sd": 0.009864394428527113
+    },
+    {
+      "model": "Frozen ViT-in21k + LogReg",
+      "fraction": 0.5,
+      "n_train": 105.88,
+      "acc_mean": 1.0,
+      "acc_sd": 0.0
+    },
+    {
+      "model": "Frozen ViT-in21k + LogReg",
+      "fraction": 0.75,
+      "n_train": 161.28,
+      "acc_mean": 0.9984905660377359,
+      "acc_sd": 0.005224291737684327
+    },
+    {
+      "model": "Frozen ViT-in21k + LogReg",
+      "fraction": 1.0,
+      "n_train": 212.0,
+      "acc_mean": 1.0,
+      "acc_sd": 0.0
+    }
+  ],
+  "learning_curve_plateaued": true,
+  "power_image_to_aqi": {
+    "n_pairs_available": 46,
+    "min_detectable_r_at_n46": 0.40301026636269627,
+    "min_detectable_R2_at_n46": 0.1624172747937314,
+    "n_required_for_R2": {
+      "0.05": 155,
+      "0.1": 77,
+      "0.2": 37,
+      "0.3": 24,
+      "0.5": 14
+    },
+    "note": "n counts INDEPENDENT units (distinct site-days / trees), not photos of the same leaf or hours of the same day. Assumes alpha=0.05 two-sided, power=0.8."
+  },
+  "station_pilot": {
+    "sheet_title": "Vikas Sadan,Gurugram-HSPCB",
+    "noon_fixes": 5,
+    "rgb_parse_counts": {
+      "digits-unique": 43,
+      "comma": 32
+    },
+    "n_rows": 75,
+    "n_days": 5,
+    "dates": [
+      "2022-10-23",
+      "2022-10-24",
+      "2022-10-25",
+      "2022-10-26",
+      "2022-10-27"
+    ],
+    "hours": [
+      8,
+      22
+    ],
+    "PM2.5_range": [
+      163.0,
+      378.0
+    ],
+    "variance_share_between_days_PM2.5": 0.8980589877352243,
+    "CO_unit_note": "CO values 12-36 are implausible as mg/m3 hourly CPCB values; unit unknown, so no CO sub-index is computed.",
+    "relation_tests_PM2.5": {
+      "brightness": {
+        "within_day_r": 0.1810444047036834,
+        "within_day_perm_p": 0.29054189162167565,
+        "between_day_r": 0.012213150679453666,
+        "between_day_p": 0.9844501201801039,
+        "n_days": 5
+      },
+      "greenness": {
+        "within_day_r": -0.05120724101599892,
+        "within_day_perm_p": 0.7176564687062588,
+        "between_day_r": -0.008597252629794327,
+        "between_day_p": 0.9890537728231213,
+        "n_days": 5
+      }
+    }
+  },
+  "station_pilot_results": [
+    {
+      "target": "PM2.5",
+      "features": "mean baseline",
+      "LODO_R2": -0.5051581806010634,
+      "LODO_MAE": 55.249777777777766
+    },
+    {
+      "target": "PM2.5",
+      "features": "hour of day",
+      "LODO_R2": -0.515554552196388,
+      "LODO_MAE": 56.35932011737985
+    },
+    {
+      "target": "PM2.5",
+      "features": "leaf RGB",
+      "LODO_R2": -3.4424544587580126,
+      "LODO_MAE": 117.24220169641973
+    },
+    {
+      "target": "PM2.5",
+      "features": "leaf brightness + greenness",
+      "LODO_R2": -1.3662762842944702,
+      "LODO_MAE": 67.09947127712303
+    },
+    {
+      "target": "PM2.5",
+      "features": "leaf RGB + hour",
+      "LODO_R2": -4.032611690481975,
+      "LODO_MAE": 125.82598526236139
+    },
+    {
+      "target": "NO2",
+      "features": "mean baseline",
+      "LODO_R2": -0.48263277406634675,
+      "LODO_MAE": 6.555555555555556
+    },
+    {
+      "target": "NO2",
+      "features": "hour of day",
+      "LODO_R2": -0.4843603382097712,
+      "LODO_MAE": 6.558450191758621
+    },
+    {
+      "target": "NO2",
+      "features": "leaf RGB",
+      "LODO_R2": 0.16727759861667102,
+      "LODO_MAE": 4.263916139537591
+    },
+    {
+      "target": "NO2",
+      "features": "leaf brightness + greenness",
+      "LODO_R2": -2.165486974989202,
+      "LODO_MAE": 10.079534982503292
+    },
+    {
+      "target": "NO2",
+      "features": "leaf RGB + hour",
+      "LODO_R2": 0.23845689066845177,
+      "LODO_MAE": 4.126375691374827
+    },
+    {
+      "target": "SO2",
+      "features": "mean baseline",
+      "LODO_R2": -0.5410555247055306,
+      "LODO_MAE": 5.782222222222222
+    },
+    {
+      "target": "SO2",
+      "features": "hour of day",
+      "LODO_R2": -0.5407626549010236,
+      "LODO_MAE": 5.779242858534222
+    },
+    {
+      "target": "SO2",
+      "features": "leaf RGB",
+      "LODO_R2": -3.2363249912823386,
+      "LODO_MAE": 11.28096450419323
+    },
+    {
+      "target": "SO2",
+      "features": "leaf brightness + greenness",
+      "LODO_R2": -1.450575544861736,
+      "LODO_MAE": 7.007433383632539
+    },
+    {
+      "target": "SO2",
+      "features": "leaf RGB + hour",
+      "LODO_R2": -4.084827888178512,
+      "LODO_MAE": 12.618355869747594
+    },
+    {
+      "target": "CO",
+      "features": "mean baseline",
+      "LODO_R2": -0.14877254725361522,
+      "LODO_MAE": 4.712000000000001
+    },
+    {
+      "target": "CO",
+      "features": "hour of day",
+      "LODO_R2": -0.3448931532596584,
+      "LODO_MAE": 5.007990069864819
+    },
+    {
+      "target": "CO",
+      "features": "leaf RGB",
+      "LODO_R2": 0.049679147886747876,
+      "LODO_MAE": 4.251367243604492
+    },
+    {
+      "target": "CO",
+      "features": "leaf brightness + greenness",
+      "LODO_R2": -0.12281020519233476,
+      "LODO_MAE": 4.548771924376165
+    },
+    {
+      "target": "CO",
+      "features": "leaf RGB + hour",
+      "LODO_R2": -1.1424984204073354,
+      "LODO_MAE": 6.667587847546604
+    },
+    {
+      "target": "O3",
+      "features": "mean baseline",
+      "LODO_R2": -0.213360134629768,
+      "LODO_MAE": 7.422666666666667
+    },
+    {
+      "target": "O3",
+      "features": "hour of day",
+      "LODO_R2": -0.3543751165912514,
+      "LODO_MAE": 7.864281502676028
+    },
+    {
+      "target": "O3",
+      "features": "leaf RGB",
+      "LODO_R2": -0.2908352310786755,
+      "LODO_MAE": 7.675380457874113
+    },
+    {
+      "target": "O3",
+      "features": "leaf brightness + greenness",
+      "LODO_R2": -0.8841284058522809,
+      "LODO_MAE": 9.664040076538164
+    },
+    {
+      "target": "O3",
+      "features": "leaf RGB + hour",
+      "LODO_R2": -0.3722369728692563,
+      "LODO_MAE": 8.591800395597033
+    }
+  ],
+  "verdict": {
+    "phyllotaxy_classification": "QUANTITY IS SUFFICIENT, DIVERSITY IS NOT: the curve is flat from ~22 training images and the colour-only probe is also high, so more photos of the same kind add nothing; new species/sites/cameras are what is missing (generalisation untested)",
+    "image_to_AQI": "INSUFFICIENT: 46 pairs can only detect R\u00b2 \u2265 0.16; observed CV R\u00b2 is negative. Keep AQI withheld.",
+    "FTIR_workbooks_to_pollutants": "UNUSABLE for prediction claims: identical targets in both workbooks and row-order leakage (see E5).",
+    "station_pilot_leaf_RGB_to_PM2.5": "NO evidence that leaf colour predicts PM2.5 on unseen days (5 days is too few; between-day differences dominate). Report as a pilot, not as a result."
+  }
+}

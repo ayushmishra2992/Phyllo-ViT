@@ -1,2 +1,9 @@
-models/vit_phyllotaxy/model.safetensors filter=lfs diff=lfs merge=lfs -text
-models/vit_phyllotaxy_4class/model.safetensors filter=lfs diff=lfs merge=lfs -text
+# Model weights are ~330 MB each (GitHub's limit is 100 MB per file) -> stored with Git LFS
+*.safetensors filter=lfs diff=lfs merge=lfs -text
+*.bin filter=lfs diff=lfs merge=lfs -text
+*.pt filter=lfs diff=lfs merge=lfs -text
+*.pth filter=lfs diff=lfs merge=lfs -text
+
+# Windows launchers must keep CRLF line endings
+*.bat text eol=crlf
+*.sh text eol=lf

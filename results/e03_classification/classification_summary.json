@@ -1,0 +1,184 @@
+{
+  "cv": [
+    {
+      "model": "metadata_probe (orientation/size only)",
+      "protocol": "stratified 5-fold x5",
+      "accuracy_mean": 0.7667924528301887,
+      "accuracy_std": 0.03689310534858484,
+      "macro_f1_mean": 0.7610295782190413,
+      "macro_f1_std": 0.0393083098187447,
+      "n_folds": 25
+    },
+    {
+      "model": "metadata_probe (orientation/size only)",
+      "protocol": "grouped 5-fold x5",
+      "accuracy_mean": 0.7660377358490565,
+      "accuracy_std": 0.054193987231490874,
+      "macro_f1_mean": 0.7587579495373611,
+      "macro_f1_std": 0.056953731712014545,
+      "n_folds": 25
+    },
+    {
+      "model": "colour_stats_probe",
+      "protocol": "stratified 5-fold x5",
+      "accuracy_mean": 0.9562264150943396,
+      "accuracy_std": 0.02356603018263546,
+      "macro_f1_mean": 0.9558319613585812,
+      "macro_f1_std": 0.023970287100835454,
+      "n_folds": 25
+    },
+    {
+      "model": "colour_stats_probe",
+      "protocol": "grouped 5-fold x5",
+      "accuracy_mean": 0.9479245283018869,
+      "accuracy_std": 0.037845751907749386,
+      "macro_f1_mean": 0.9472832044432963,
+      "macro_f1_std": 0.038555292585350405,
+      "n_folds": 25
+    },
+    {
+      "model": "HOG + SVM (RBF, C=10)",
+      "protocol": "stratified 5-fold x5",
+      "accuracy_mean": 0.9328301886792453,
+      "accuracy_std": 0.03574961381414417,
+      "macro_f1_mean": 0.9330441973905447,
+      "macro_f1_std": 0.03610359287279445,
+      "n_folds": 25
+    },
+    {
+      "model": "HOG + SVM (RBF, C=10)",
+      "protocol": "grouped 5-fold x5",
+      "accuracy_mean": 0.9252830188679245,
+      "accuracy_std": 0.026392622966487148,
+      "macro_f1_mean": 0.9256540938484228,
+      "macro_f1_std": 0.02671061026124966,
+      "n_folds": 25
+    },
+    {
+      "model": "Frozen ViT-in21k + LogReg",
+      "protocol": "stratified 5-fold x5",
+      "accuracy_mean": 1.0,
+      "accuracy_std": 0.0,
+      "macro_f1_mean": 1.0,
+      "macro_f1_std": 0.0,
+      "n_folds": 25
+    },
+    {
+      "model": "Frozen ViT-in21k + LogReg",
+      "protocol": "grouped 5-fold x5",
+      "accuracy_mean": 1.0,
+      "accuracy_std": 0.0,
+      "macro_f1_mean": 1.0,
+      "macro_f1_std": 0.0,
+      "n_folds": 25
+    },
+    {
+      "model": "Frozen ViT-in21k + kNN(k=5, cosine)",
+      "protocol": "stratified 5-fold x5",
+      "accuracy_mean": 0.9924528301886792,
+      "accuracy_std": 0.009433962264150941,
+      "macro_f1_mean": 0.9923659097852646,
+      "macro_f1_std": 0.009544468411930407,
+      "n_folds": 25
+    },
+    {
+      "model": "Frozen ViT-in21k + kNN(k=5, cosine)",
+      "protocol": "grouped 5-fold x5",
+      "accuracy_mean": 0.9924528301886792,
+      "accuracy_std": 0.009433962264150941,
+      "macro_f1_mean": 0.9924147382211899,
+      "macro_f1_std": 0.009483137227240885,
+      "n_folds": 25
+    }
+  ],
+  "finetuned_heldout": {
+    "ft3": {
+      "test_n": 40,
+      "correct": 40,
+      "accuracy": 1.0,
+      "wilson95": [
+        0.9123754607496077,
+        1.0
+      ],
+      "macro_f1": 1.0,
+      "confusion_matrix": [
+        [
+          14,
+          0,
+          0
+        ],
+        [
+          0,
+          12,
+          0
+        ],
+        [
+          0,
+          0,
+          14
+        ]
+      ],
+      "classes": [
+        "Alternate",
+        "Opposite",
+        "Whorled"
+      ],
+      "test_images_with_near_dup_in_trainval": 6,
+      "dedup_test_n": 34,
+      "dedup_accuracy": 1.0,
+      "dedup_wilson95": [
+        0.8984820937803899,
+        1.0
+      ]
+    },
+    "ft4": {
+      "test_n": 65,
+      "correct": 64,
+      "accuracy": 0.9846153846153847,
+      "wilson95": [
+        0.9178652058620286,
+        0.9972791254725134
+      ],
+      "macro_f1": 0.9826762246117084,
+      "confusion_matrix": [
+        [
+          13,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          13,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          15,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          23
+        ]
+      ],
+      "classes": [
+        "Alternate",
+        "Opposite",
+        "Whorled",
+        "Not_a_leaf"
+      ],
+      "test_images_with_near_dup_in_trainval": 10,
+      "dedup_test_n": 55,
+      "dedup_accuracy": 0.9818181818181818,
+      "dedup_wilson95": [
+        0.9039399953951678,
+        0.9967833024077472
+      ]
+    }
+  }
+}

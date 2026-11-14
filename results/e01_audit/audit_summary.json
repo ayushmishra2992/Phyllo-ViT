@@ -1,0 +1,48 @@
+{
+  "n_images": 415,
+  "per_class": {
+    "Not_a_leaf": 150,
+    "Whorled": 94,
+    "Alternate": 88,
+    "Opposite": 83
+  },
+  "exact_duplicate_md5_groups": 0,
+  "near_duplicate_threshold_bits": 6,
+  "near_duplicate_pairs": 44,
+  "near_duplicate_pairs_cross_class": 0,
+  "near_dup_pairs_across_splits_3class": 20,
+  "near_dup_pairs_across_splits_4class": 22,
+  "near_dup_pairs_linking_test_to_trainval_3class": 7,
+  "near_dup_pairs_linking_test_to_trainval_4class": 14,
+  "n_groups_after_merging_near_dups": 379,
+  "distinct_leaf_resolutions": 5,
+  "leaf_images_in_class_pure_resolution_clusters": 0.023,
+  "top_leaf_resolutions": {
+    "1200x1600": {
+      "Alternate": 65,
+      "Opposite": 19,
+      "Whorled": 39
+    },
+    "867x1156": {
+      "Alternate": 23,
+      "Opposite": 3,
+      "Whorled": 28
+    },
+    "1600x1200": {
+      "Alternate": 0,
+      "Opposite": 34,
+      "Whorled": 17
+    },
+    "1156x867": {
+      "Alternate": 0,
+      "Opposite": 21,
+      "Whorled": 10
+    },
+    "960x1280": {
+      "Alternate": 0,
+      "Opposite": 6,
+      "Whorled": 0
+    }
+  },
+  "fourclass_test_images_in_threeclass_train": 30
+}

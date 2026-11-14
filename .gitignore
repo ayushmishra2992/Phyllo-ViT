@@ -1,32 +1,23 @@
 # Python
 .venv/
 venv/
-env/
 __pycache__/
-*.py[cod]
-*$py.class
+*.pyc
+.pytest_cache/
 
-# Jupyter
-.ipynb_checkpoints/
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env.local
+frontend/.vercel/
 
-# IDE
-.vscode/
-.idea/
 
-# OS
+# OS / editors / logs
 .DS_Store
 Thumbs.db
-
-# Logs / temporary files
+desktop.ini
+.vscode/
+.idea/
 *.log
-*.tmp
-*.temp
-# Temporary COCO dataset files
-data/raw/coco_annotations.zip
-data/raw/coco_temp/
-
-# Downloaded Not-a-leaf raw images
-data/raw/not_a_leaf/
-
-# Generated visual inspection files
-results/eda/not_a_leaf_contact_sheet.jpg
+build_hf_space/

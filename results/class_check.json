@@ -1,0 +1,145 @@
+{
+  "test": {
+    "per_class": {
+      "Alternate": {
+        "n": 14,
+        "correct": 13,
+        "accuracy": 0.9286,
+        "predicted": {
+          "Alternate": 13,
+          "Whorled": 1
+        },
+        "decision_status": {
+          "ACCEPT": 13,
+          "ABSTAIN_UNFAMILIAR": 1
+        }
+      },
+      "Opposite": {
+        "n": 13,
+        "correct": 13,
+        "accuracy": 1.0,
+        "predicted": {
+          "Opposite": 13
+        },
+        "decision_status": {
+          "ACCEPT": 13
+        }
+      },
+      "Whorled": {
+        "n": 15,
+        "correct": 15,
+        "accuracy": 1.0,
+        "predicted": {
+          "Whorled": 15
+        },
+        "decision_status": {
+          "ACCEPT": 15
+        }
+      },
+      "Not_a_leaf": {
+        "n": 23,
+        "correct": 23,
+        "accuracy": 1.0,
+        "predicted": {
+          "Not_a_leaf": 23
+        },
+        "decision_status": {
+          "NOT_A_LEAF": 23
+        }
+      }
+    },
+    "misclassified": [
+      {
+        "file": "Alternate/2.jpeg",
+        "predicted": "Whorled",
+        "status": "ABSTAIN_UNFAMILIAR"
+      }
+    ]
+  },
+  "val": {
+    "per_class": {
+      "Alternate": {
+        "n": 13,
+        "correct": 13,
+        "accuracy": 1.0,
+        "predicted": {
+          "Alternate": 13
+        },
+        "decision_status": {
+          "ABSTAIN_UNFAMILIAR": 1,
+          "ACCEPT": 12
+        }
+      },
+      "Opposite": {
+        "n": 12,
+        "correct": 12,
+        "accuracy": 1.0,
+        "predicted": {
+          "Opposite": 12
+        },
+        "decision_status": {
+          "ACCEPT": 12
+        }
+      },
+      "Whorled": {
+        "n": 14,
+        "correct": 14,
+        "accuracy": 1.0,
+        "predicted": {
+          "Whorled": 14
+        },
+        "decision_status": {
+          "ACCEPT": 13,
+          "ABSTAIN_UNFAMILIAR": 1
+        }
+      },
+      "Not_a_leaf": {
+        "n": 22,
+        "correct": 22,
+        "accuracy": 1.0,
+        "predicted": {
+          "Not_a_leaf": 22
+        },
+        "decision_status": {
+          "NOT_A_LEAF": 22
+        }
+      }
+    },
+    "misclassified": []
+  },
+  "http_predict": {
+    "Alternate": {
+      "file": "12.jpeg",
+      "http": 200,
+      "predicted": "Alternate",
+      "confidence": 0.9881,
+      "status": "ACCEPT",
+      "has_heatmap": true
+    },
+    "Opposite": {
+      "file": "12.jpeg",
+      "http": 200,
+      "predicted": "Opposite",
+      "confidence": 0.988,
+      "status": "ACCEPT",
+      "has_heatmap": true
+    },
+    "Whorled": {
+      "file": "16.jpeg",
+      "http": 200,
+      "predicted": "Whorled",
+      "confidence": 0.9804,
+      "status": "ACCEPT",
+      "has_heatmap": true
+    },
+    "Not_a_leaf": {
+      "file": "not_a_leaf_0001.jpg",
+      "http": 200,
+      "predicted": "Not_a_leaf",
+      "confidence": 0.9249,
+      "status": "NOT_A_LEAF",
+      "has_heatmap": true
+    }
+  },
+  "overall": "PASS"
+}

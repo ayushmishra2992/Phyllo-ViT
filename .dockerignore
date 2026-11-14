@@ -1,0 +1,10 @@
+.git
+.venv
+**/__pycache__
+frontend
+data
+docs
+experiments
+tests
+*.bat
+build_hf_space

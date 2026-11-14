@@ -1,0 +1,52 @@
+{
+  "model": "models/vit_phyllotaxy_4class",
+  "classes": [
+    "Alternate",
+    "Opposite",
+    "Whorled",
+    "Not_a_leaf"
+  ],
+  "temperature": 0.5000063322577876,
+  "noise_sigma_warn": 9.182336843189345,
+  "thresholds": {
+    "mahalanobis": -6947.828549646905,
+    "knn": 0.7981500625610352,
+    "confidence": 0.9
+  },
+  "knn_k": 5,
+  "fit_on": "4-class TRAIN leaf embeddings; thresholds on VAL leaves (95% TPR)",
+  "test_evaluation": {
+    "test_leaves_n": 42,
+    "test_leaves_coverage": 0.9761904761904762,
+    "test_leaves_accuracy_on_accepted": 1.0,
+    "test_leaves_accuracy_without_policy": 0.9761904761904762,
+    "test_leaf_decisions": {
+      "ACCEPT": 41,
+      "ABSTAIN_UNFAMILIAR": 1
+    },
+    "test_nonleaf_n": 23,
+    "test_nonleaf_decisions": {
+      "NOT_A_LEAF": 23
+    },
+    "corrupted_n": 168,
+    "corrupted_not_accepted_rate": 0.8988095238095238,
+    "corrupted_decisions_by_kind": {
+      "blur": {
+        "REJECT_QUALITY": 42
+      },
+      "dark": {
+        "REJECT_QUALITY": 42
+      },
+      "noise": {
+        "ABSTAIN_UNFAMILIAR": 25,
+        "ACCEPT": 17
+      },
+      "occlusion": {
+        "ABSTAIN_UNFAMILIAR": 29,
+        "NOT_A_LEAF": 13
+      }
+    }
+  },
+  "ece_test_raw": 0.2053380393064939,
+  "ece_test_calibrated": 0.033317240384908825
+}
