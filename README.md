@@ -1,4 +1,4 @@
-﻿# Phyllo-ViT v1.0.1
+# Phyllo-ViT v1.0.1
 
 **Reliability-aware phyllotaxy recognition (Alternate / Opposite / Whorled / Not_a_leaf) with open-set abstention, explanations, and an evidence audit of leaf-based air-quality claims.**
 
@@ -32,6 +32,9 @@ Python 3.12 Â· PyTorch (CUDA 12.6 build; CPU works) Â· Hugging Face Transfor
 | `models/vit_phyllotaxy_4class` | Deployed 4-class classifier (fine-tuned `google/vit-base-patch16-224-in21k`) |
 | `models/vit_phyllotaxy` | Original 3-class model; its embedding space is used by the AQI regressor â€” do not replace it |
 
+## Phyllo-ViT 2.0 (branch `v2-dev`, tag `v2.0.0` once released)
+A modular analysis dashboard on top of the frozen v1.0.1 engine: phyllotaxy with uncertainty, pixel-space morphology, experimental visible-condition flags, optional ambient air quality from OpenAQ (needs a free API key and a location), optional FTIR spectrum analysis, and an honest status for every module that is unsupported (species, Spiral, dust, leaf-based AQI) or disabled (bacteria/fungi). Nothing is invented: see `docs/V2_ARCHITECTURE.md` and `v2/data_registry/DATASET_SOURCES.md`.
+Run: `INSTALL.bat`, then `RUN_V2.bat` (UI at http://localhost:3000/v2 with Node.js, API at http://127.0.0.1:8000/docs). Tests: `RUN_TESTS_V2.bat` (13 v1 + 23 v2). Config: `.env.example`.
 ## Install and run (Windows)
 Keep the project path short (Windows 260-character limit).
 1. `INSTALL.bat` â€” creates `.venv`, installs PyTorch + requirements (about 4 GB, 10â€“20 min), and `npm ci` for the frontend if Node.js â‰¥ 20.9 is present.
